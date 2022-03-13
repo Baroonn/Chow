@@ -10,6 +10,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <ProjectReference Include="../Service.Contracts/Service.Contracts.csproj" />
     <ProjectReference Include="../Entities/Entities.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="7.0.0-preview.1.22109.13" />
   </ItemGroup>
 
 </Project>

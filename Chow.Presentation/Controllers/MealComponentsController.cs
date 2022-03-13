@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
@@ -37,6 +38,11 @@ public class MealComponentsController : ControllerBase
             return BadRequest("MealComponentCreateDto is null");
         }
 
+        if (!ModelState.IsValid)
+        {
+            return UnprocessableEntity(ModelState);
+        }
+
         var mealComponentReadDto = _service.MealComponentService.CreateMealComponentForStore(storeId, mealComponentCreateDto, trackChanges: false);
         return CreatedAtRoute("GetMealComponentForStore", new { storeId, id = mealComponentReadDto.Id }, mealComponentReadDto);
     }
@@ -57,6 +63,21 @@ public class MealComponentsController : ControllerBase
         }
 
         _service.MealComponentService.UpdateMealComponentForStore(storeId, id, mealComponentUpdateDto, trackStoreChanges: false, trackMealComponentChanges: true);
+        return NoContent();
+    }
+
+    [HttpPatch("{id:guid}")]
+    public IActionResult PartiallyUpdateMealComponentForStore(Guid storeId, Guid id, 
+    [FromBody] JsonPatchDocument<MealComponentUpdateDto> patchDoc)
+    {
+        if(patchDoc is null)
+        {
+            return BadRequest("patchDoc object sent from client is null");
+        }
+
+        var result = _service.MealComponentService.GetMealComponentForPatch(storeId, id, trackStoreChanges: false, trackMealComponentChanges: true);
+        patchDoc.ApplyTo(result.mealComponentToPatch);
+        _service.MealComponentService.SaveChangesForPatch(result.mealComponentToPatch, result.mealComponent);
         return NoContent();
     }
 }

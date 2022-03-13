@@ -38,6 +38,11 @@ public class StoresController : ControllerBase
             return BadRequest("Store parameters are not complete");
         }
 
+        if(!ModelState.IsValid)
+        {
+            return UnprocessableEntity(ModelState);
+        }
+
         var createdStore = _service.StoreService.CreateStore(storeCreateDto);
         return CreatedAtRoute("StoreById", new { id = createdStore.Id }, createdStore);
     }

@@ -69,6 +69,24 @@ internal sealed class MealComponentService : IMealComponentService
         return mealComponentReadDto;
     }
 
+    public (MealComponentUpdateDto mealComponentToPatch, MealComponent mealComponent) GetMealComponentForPatch(Guid storeId, Guid id, bool trackStoreChanges, bool trackMealComponentChanges)
+    {
+        var store = _repository.Store.GetStore(storeId, trackStoreChanges);
+        if(store is null)
+        {
+            throw new StoreNotFoundException(storeId);
+        }
+
+        var mealComponent = _repository.MealComponent.GetMealComponent(storeId, id, trackMealComponentChanges);
+        if (mealComponent is null)
+        {
+            throw new MealComponentNotFoundException(id);
+        }
+
+        var mealComponentToPatch = _mapper.Map<MealComponentUpdateDto>(mealComponent);
+        return (mealComponentToPatch, mealComponent);
+    }
+
     public IEnumerable<MealComponentReadDto> GetMealComponents(Guid storeId, bool trackChanges)
     {
         var store = _repository.Store.GetStore(storeId, trackChanges);
@@ -79,6 +97,12 @@ internal sealed class MealComponentService : IMealComponentService
         var mealComponents = _repository.MealComponent.GetMealComponents(storeId, trackChanges);
         var mealComponentsReadDto = _mapper.Map<IEnumerable<MealComponentReadDto>>(mealComponents);
         return mealComponentsReadDto;
+    }
+
+    public void SaveChangesForPatch(MealComponentUpdateDto mealComponentToPatch, MealComponent mealComponent)
+    {
+        _mapper.Map(mealComponentToPatch, mealComponent);
+        _repository.Save();
     }
 
     public void UpdateMealComponentForStore(Guid storeId, Guid id, MealComponentUpdateDto mealComponentUpdateDto, bool trackStoreChanges, bool trackMealComponentChanges)
