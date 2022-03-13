@@ -11,7 +11,7 @@ public class MappingProfile: Profile
         CreateMap<MealComponent, MealComponentReadDto>();
         CreateMap<StoreCreateDto, Store>();
         CreateMap<MealComponentCreateDto, MealComponent>();
-        CreateMap<MealComponentUpdateDto, MealComponent>();
+        CreateMap<MealComponentUpdateDto, MealComponent>().ReverseMap();
         CreateMap<StoreUpdateDto, Store>();
     }
 }
