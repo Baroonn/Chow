@@ -62,6 +62,11 @@ public class MealComponentsController : ControllerBase
             return BadRequest("MealComponentUpdateDto object is null");
         }
 
+        if (!ModelState.IsValid)
+        {
+            return UnprocessableEntity(ModelState);
+        }
+
         _service.MealComponentService.UpdateMealComponentForStore(storeId, id, mealComponentUpdateDto, trackStoreChanges: false, trackMealComponentChanges: true);
         return NoContent();
     }
@@ -76,7 +81,12 @@ public class MealComponentsController : ControllerBase
         }
 
         var result = _service.MealComponentService.GetMealComponentForPatch(storeId, id, trackStoreChanges: false, trackMealComponentChanges: true);
-        patchDoc.ApplyTo(result.mealComponentToPatch);
+        patchDoc.ApplyTo(result.mealComponentToPatch, ModelState);
+        TryValidateModel(result.mealComponentToPatch);
+        if (!ModelState.IsValid)
+        {
+            return UnprocessableEntity(ModelState);
+        }
         _service.MealComponentService.SaveChangesForPatch(result.mealComponentToPatch, result.mealComponent);
         return NoContent();
     }

@@ -76,6 +76,11 @@ public class StoresController : ControllerBase
             return BadRequest("StoreUpdateDto is null");
         }
 
+        if(!ModelState.IsValid)
+        {
+            return UnprocessableEntity(ModelState);
+        }
+
         _service.StoreService.UpdateStore(id, storeUpdateDto, trackChanges: true);
         return NoContent();
     }

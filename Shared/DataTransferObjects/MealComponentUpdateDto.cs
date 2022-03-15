@@ -1,3 +1,9 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Shared.DataTransferObjects;
 
-public record MealComponentUpdateDto(string Name, string Type, bool Is_Available, int Price);
+public record MealComponentUpdateDto : MealComponentManipulationDto
+{
+    [Required(ErrorMessage="Specify if the component is available")]
+    public bool Is_Available { get; init; }
+}
