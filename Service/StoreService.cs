@@ -78,6 +78,19 @@ internal sealed class StoreService : IStoreService
         var storeReadDto = _mapper.Map<StoreReadDto>(store);
         return storeReadDto;
     }
+
+    public async Task<(StoreUpdateDto storeToPatch, Store store)> GetStoreForPatchAsync(Guid storeId, bool trackChanges)
+    {
+        var store = await _repository.Store.GetStoreAsync(storeId, trackChanges);
+        if (store is null)
+        {
+            throw new StoreNotFoundException(storeId);
+        }
+
+        var storeToPatch = _mapper.Map<StoreUpdateDto>(store);
+        return (storeToPatch, store);
+    }
+
     public async Task<IEnumerable<StoreReadDto>> GetStoresByIdsAsync(IEnumerable<Guid> ids, bool trackChanges)
     {
         if (ids is null)
@@ -92,6 +105,12 @@ internal sealed class StoreService : IStoreService
         }
         var storesReadDto = _mapper.Map<IEnumerable<StoreReadDto>>(stores);
         return storesReadDto;
+    }
+
+    public async Task SaveChangesForPatchAsync(StoreUpdateDto storeToPatch, Store store)
+    {
+        _mapper.Map(storeToPatch, store);
+        await _repository.SaveAsync();
     }
 
     public async Task UpdateStoreAsync(Guid storeId, StoreUpdateDto storeUpdateDto, bool trackChanges)

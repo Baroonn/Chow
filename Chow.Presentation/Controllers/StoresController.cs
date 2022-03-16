@@ -1,4 +1,5 @@
 using Chow.Presentation.ModelBinders;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
@@ -83,6 +84,26 @@ public class StoresController : ControllerBase
 
         await _service.StoreService.UpdateStoreAsync(id, storeUpdateDto, trackChanges: true);
         return NoContent();
+    }
+
+    [HttpPatch("{id:guid}")]
+    public async Task<IActionResult> PartiallyUpdateStore(Guid id, [FromBody] JsonPatchDocument<StoreUpdateDto> patchDoc)
+    {
+        if(patchDoc is null)
+        {
+            return BadRequest("patchDoc object sent from client is null");
+        }
+
+        var result = await _service.StoreService.GetStoreForPatchAsync(id, trackChanges: true);
+        patchDoc.ApplyTo(result.storeToPatch, ModelState);
+        TryValidateModel(result.storeToPatch);
+        if (!ModelState.IsValid)
+        {
+            return UnprocessableEntity(ModelState);
+        }
+        await _service.StoreService.SaveChangesForPatchAsync(result.storeToPatch, result.store);
+        return NoContent();
+
     }
 
 }
