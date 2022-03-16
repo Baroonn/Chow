@@ -1,3 +1,4 @@
+using Chow.Presentation.ActionFilters;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
@@ -31,18 +32,9 @@ public class MealComponentsController : ControllerBase
     }
 
     [HttpPost]
+    [ServiceFilter(typeof(ValidationFilterAttribute))]
     public async Task<IActionResult> CreateMealComponentForStore(Guid storeId, [FromBody] MealComponentCreateDto mealComponentCreateDto)
     {
-        if (mealComponentCreateDto is null)
-        {
-            return BadRequest("MealComponentCreateDto is null");
-        }
-
-        if (!ModelState.IsValid)
-        {
-            return UnprocessableEntity(ModelState);
-        }
-
         var mealComponentReadDto = await _service.MealComponentService.CreateMealComponentForStoreAsync(storeId, mealComponentCreateDto, trackChanges: false);
         return CreatedAtRoute("GetMealComponentForStore", new { storeId, id = mealComponentReadDto.Id }, mealComponentReadDto);
     }
@@ -55,18 +47,9 @@ public class MealComponentsController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [ServiceFilter(typeof(ValidationFilterAttribute))]
     public async Task<IActionResult> UpdateMealComponentForStore(Guid storeId, Guid id, [FromBody] MealComponentUpdateDto mealComponentUpdateDto)
     {
-        if (mealComponentUpdateDto is null)
-        {
-            return BadRequest("MealComponentUpdateDto object is null");
-        }
-
-        if (!ModelState.IsValid)
-        {
-            return UnprocessableEntity(ModelState);
-        }
-
         await _service.MealComponentService.UpdateMealComponentForStoreAsync(storeId, id, mealComponentUpdateDto, trackStoreChanges: false, trackMealComponentChanges: true);
         return NoContent();
     }

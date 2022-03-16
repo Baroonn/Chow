@@ -1,3 +1,4 @@
+using Chow.Presentation.ActionFilters;
 using Chow.Presentation.ModelBinders;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -32,18 +33,9 @@ public class StoresController : ControllerBase
     }
 
     [HttpPost]
+    [ServiceFilter(typeof(ValidationFilterAttribute))]
     public async Task<IActionResult> CreateStore([FromBody] StoreCreateDto storeCreateDto)
     {
-        if(storeCreateDto is null)
-        {
-            return BadRequest("Store parameters are not complete");
-        }
-
-        if(!ModelState.IsValid)
-        {
-            return UnprocessableEntity(ModelState);
-        }
-
         var createdStore = await _service.StoreService.CreateStoreAsync(storeCreateDto);
         return CreatedAtRoute("StoreById", new { id = createdStore.Id }, createdStore);
     }
@@ -70,18 +62,9 @@ public class StoresController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [ServiceFilter(typeof(ValidationFilterAttribute))]
     public async Task<IActionResult> UpdateStore(Guid id, [FromBody] StoreUpdateDto storeUpdateDto)
     {
-        if (storeUpdateDto is null)
-        {
-            return BadRequest("StoreUpdateDto is null");
-        }
-
-        if(!ModelState.IsValid)
-        {
-            return UnprocessableEntity(ModelState);
-        }
-
         await _service.StoreService.UpdateStoreAsync(id, storeUpdateDto, trackChanges: true);
         return NoContent();
     }

@@ -19,6 +19,16 @@ internal sealed class StoreService : IStoreService
         _mapper = mapper;
     }
 
+    private async Task<Store> GetStoreAndCheckIfItExists(Guid id, bool trackChanges)
+    {
+        var store = await _repository.Store.GetStoreAsync(id, trackChanges);
+        if (store is null)
+        {
+            throw new StoreNotFoundException(id);
+        }
+        return store;
+    }
+
     public async Task<StoreReadDto> CreateStoreAsync(StoreCreateDto storeCreateDto)
     {
         var store = _mapper.Map<Store>(storeCreateDto);
@@ -51,11 +61,7 @@ internal sealed class StoreService : IStoreService
 
     public async Task DeleteStoreAsync(Guid storeId, bool trackChanges)
     {
-        var store = await _repository.Store.GetStoreAsync(storeId, trackChanges);
-        if (store is null)
-        {
-            throw new StoreNotFoundException(storeId);
-        }
+        var store = await GetStoreAndCheckIfItExists(storeId, trackChanges);
 
         _repository.Store.DeleteStore(store);
         await _repository.SaveAsync();
@@ -70,22 +76,14 @@ internal sealed class StoreService : IStoreService
     }
     public async Task<StoreReadDto> GetStoreAsync(Guid storeId, bool trackChanges)
     {
-        var store = await _repository.Store.GetStoreAsync(storeId, trackChanges);
-        if (store is null)
-        {
-            throw new StoreNotFoundException(storeId);
-        }
+        var store = await GetStoreAndCheckIfItExists(storeId, trackChanges);
         var storeReadDto = _mapper.Map<StoreReadDto>(store);
         return storeReadDto;
     }
 
     public async Task<(StoreUpdateDto storeToPatch, Store store)> GetStoreForPatchAsync(Guid storeId, bool trackChanges)
     {
-        var store = await _repository.Store.GetStoreAsync(storeId, trackChanges);
-        if (store is null)
-        {
-            throw new StoreNotFoundException(storeId);
-        }
+        var store = await GetStoreAndCheckIfItExists(storeId, trackChanges);
 
         var storeToPatch = _mapper.Map<StoreUpdateDto>(store);
         return (storeToPatch, store);
@@ -115,11 +113,7 @@ internal sealed class StoreService : IStoreService
 
     public async Task UpdateStoreAsync(Guid storeId, StoreUpdateDto storeUpdateDto, bool trackChanges)
     {
-        var store = await _repository.Store.GetStoreAsync(storeId, trackChanges);
-        if(store is null)
-        {
-            throw new StoreNotFoundException(storeId);
-        }
+        var store = await GetStoreAndCheckIfItExists(storeId, trackChanges);
 
         _mapper.Map(storeUpdateDto, store);
         await _repository.SaveAsync();
