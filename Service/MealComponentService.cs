@@ -19,9 +19,9 @@ internal sealed class MealComponentService : IMealComponentService
         _mapper = mapper;
     }
 
-    public MealComponentReadDto CreateMealComponentForStore(Guid storeId, MealComponentCreateDto mealComponentCreateDto, bool trackChanges)
+    public async Task<MealComponentReadDto> CreateMealComponentForStoreAsync(Guid storeId, MealComponentCreateDto mealComponentCreateDto, bool trackChanges)
     {
-        var store = _repository.Store.GetStore(storeId, trackChanges);
+        var store = await _repository.Store.GetStoreAsync(storeId, trackChanges);
         if(store is null)
         {
             throw new StoreNotFoundException(storeId);
@@ -29,38 +29,38 @@ internal sealed class MealComponentService : IMealComponentService
 
         var mealComponent = _mapper.Map<MealComponent>(mealComponentCreateDto);
         _repository.MealComponent.CreateMealComponentForStore(storeId, mealComponent);
-        _repository.Save();
+        await _repository.SaveAsync();
 
         var mealComponentReadDto = _mapper.Map<MealComponentReadDto>(mealComponent);
         return mealComponentReadDto;
     }
 
-    public void DeleteMealComponentForStore(Guid storeId, Guid id, bool trackChanges)
+    public async Task DeleteMealComponentForStoreAsync(Guid storeId, Guid id, bool trackChanges)
     {
-        var store = _repository.Store.GetStore(storeId, trackChanges);
+        var store = await _repository.Store.GetStoreAsync(storeId, trackChanges);
         if (store is null)
         {
             throw new StoreNotFoundException(storeId);
         }
 
-        var mealComponent = _repository.MealComponent.GetMealComponent(storeId, id, trackChanges);
+        var mealComponent = await _repository.MealComponent.GetMealComponentAsync(storeId, id, trackChanges);
         if (mealComponent is null)
         {
             throw new MealComponentNotFoundException(id);
         }
 
         _repository.MealComponent.DeleteMealComponent(mealComponent);
-        _repository.Save();
+        await _repository.SaveAsync();
     }
 
-    public MealComponentReadDto GetMealComponent(Guid storeId, Guid mealComponentId, bool trackChanges)
+    public async Task<MealComponentReadDto> GetMealComponentAsync(Guid storeId, Guid mealComponentId, bool trackChanges)
     {
-        var store = _repository.Store.GetStore(storeId, trackChanges);
+        var store = await _repository.Store.GetStoreAsync(storeId, trackChanges);
         if(store is null)
         {
             throw new StoreNotFoundException(storeId);
         }
-        var mealComponent = _repository.MealComponent.GetMealComponent(storeId, mealComponentId, trackChanges);
+        var mealComponent = await _repository.MealComponent.GetMealComponentAsync(storeId, mealComponentId, trackChanges);
         if (mealComponent is null)
         {
             throw new MealComponentNotFoundException(mealComponentId);
@@ -69,15 +69,15 @@ internal sealed class MealComponentService : IMealComponentService
         return mealComponentReadDto;
     }
 
-    public (MealComponentUpdateDto mealComponentToPatch, MealComponent mealComponent) GetMealComponentForPatch(Guid storeId, Guid id, bool trackStoreChanges, bool trackMealComponentChanges)
+    public async Task<(MealComponentUpdateDto mealComponentToPatch, MealComponent mealComponent)> GetMealComponentForPatchAsync(Guid storeId, Guid id, bool trackStoreChanges, bool trackMealComponentChanges)
     {
-        var store = _repository.Store.GetStore(storeId, trackStoreChanges);
+        var store = await _repository.Store.GetStoreAsync(storeId, trackStoreChanges);
         if(store is null)
         {
             throw new StoreNotFoundException(storeId);
         }
 
-        var mealComponent = _repository.MealComponent.GetMealComponent(storeId, id, trackMealComponentChanges);
+        var mealComponent = await _repository.MealComponent.GetMealComponentAsync(storeId, id, trackMealComponentChanges);
         if (mealComponent is null)
         {
             throw new MealComponentNotFoundException(id);
@@ -87,39 +87,39 @@ internal sealed class MealComponentService : IMealComponentService
         return (mealComponentToPatch, mealComponent);
     }
 
-    public IEnumerable<MealComponentReadDto> GetMealComponents(Guid storeId, bool trackChanges)
+    public async Task<IEnumerable<MealComponentReadDto>> GetMealComponentsAsync(Guid storeId, bool trackChanges)
     {
-        var store = _repository.Store.GetStore(storeId, trackChanges);
+        var store = await _repository.Store.GetStoreAsync(storeId, trackChanges);
         if(store is null)
         {
             throw new StoreNotFoundException(storeId);
         }
-        var mealComponents = _repository.MealComponent.GetMealComponents(storeId, trackChanges);
+        var mealComponents = await _repository.MealComponent.GetMealComponentsAsync(storeId, trackChanges);
         var mealComponentsReadDto = _mapper.Map<IEnumerable<MealComponentReadDto>>(mealComponents);
         return mealComponentsReadDto;
     }
 
-    public void SaveChangesForPatch(MealComponentUpdateDto mealComponentToPatch, MealComponent mealComponent)
+    public async Task SaveChangesForPatchAsync(MealComponentUpdateDto mealComponentToPatch, MealComponent mealComponent)
     {
         _mapper.Map(mealComponentToPatch, mealComponent);
-        _repository.Save();
+        await _repository.SaveAsync();
     }
 
-    public void UpdateMealComponentForStore(Guid storeId, Guid id, MealComponentUpdateDto mealComponentUpdateDto, bool trackStoreChanges, bool trackMealComponentChanges)
+    public async Task UpdateMealComponentForStoreAsync(Guid storeId, Guid id, MealComponentUpdateDto mealComponentUpdateDto, bool trackStoreChanges, bool trackMealComponentChanges)
     {
-        var store = _repository.Store.GetStore(storeId, trackStoreChanges);
+        var store = await _repository.Store.GetStoreAsync(storeId, trackStoreChanges);
         if(store is null)
         {
             throw new StoreNotFoundException(storeId);
         }
 
-        var mealComponent = _repository.MealComponent.GetMealComponent(storeId, id, trackMealComponentChanges);
+        var mealComponent = await _repository.MealComponent.GetMealComponentAsync(storeId, id, trackMealComponentChanges);
         if(mealComponent is null)
         {
             throw new MealComponentNotFoundException(id);
         }
 
         _mapper.Map(mealComponentUpdateDto, mealComponent);
-        _repository.Save();
+        await _repository.SaveAsync();
     }
 }

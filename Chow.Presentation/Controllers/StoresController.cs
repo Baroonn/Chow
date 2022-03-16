@@ -17,21 +17,21 @@ public class StoresController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetStores()
+    public async Task<IActionResult> GetStores()
     {
-        var stores = _service.StoreService.GetAllStores(trackChanges: false);
+        var stores = await _service.StoreService.GetAllStoresAsync(trackChanges: false);
         return Ok(stores);
     }
 
     [HttpGet("{id:guid}", Name="StoreById")]
-    public IActionResult GetStore(Guid id)
+    public async Task<IActionResult> GetStore(Guid id)
     {
-        var store = _service.StoreService.GetStore(id, trackChanges: false);
+        var store = await _service.StoreService.GetStoreAsync(id, trackChanges: false);
         return Ok(store);
     }
 
     [HttpPost]
-    public IActionResult CreateStore([FromBody] StoreCreateDto storeCreateDto)
+    public async Task<IActionResult> CreateStore([FromBody] StoreCreateDto storeCreateDto)
     {
         if(storeCreateDto is null)
         {
@@ -43,33 +43,33 @@ public class StoresController : ControllerBase
             return UnprocessableEntity(ModelState);
         }
 
-        var createdStore = _service.StoreService.CreateStore(storeCreateDto);
+        var createdStore = await _service.StoreService.CreateStoreAsync(storeCreateDto);
         return CreatedAtRoute("StoreById", new { id = createdStore.Id }, createdStore);
     }
 
     [HttpGet("collection/({ids})", Name = "StoreCollection")]
-    public IActionResult GetStoreCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))]IEnumerable<Guid> ids)
+    public async Task<IActionResult> GetStoreCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))]IEnumerable<Guid> ids)
     {
-        var storesReadDto = _service.StoreService.GetStoresByIds(ids, trackChanges: false);
+        var storesReadDto = await _service.StoreService.GetStoresByIdsAsync(ids, trackChanges: false);
         return Ok(storesReadDto);
     }
 
     [HttpPost("collection")]
-    public IActionResult CreateStoreCollection([FromBody] IEnumerable<StoreCreateDto> storeCreateDtoCollection)
+    public async Task<IActionResult> CreateStoreCollection([FromBody] IEnumerable<StoreCreateDto> storeCreateDtoCollection)
     {
-        var result = _service.StoreService.CreateStoreCollection(storeCreateDtoCollection);
+        var result = await _service.StoreService.CreateStoreCollectionAsync(storeCreateDtoCollection);
         return CreatedAtRoute("StoreCollection", new { result.ids }, result.storeReadDtoCollection);
     }
 
     [HttpDelete("{id:guid}")]
-    public IActionResult DeleteStore(Guid id)
+    public async Task<IActionResult> DeleteStore(Guid id)
     {
-        _service.StoreService.DeleteStore(id, trackChanges: false);
+        await _service.StoreService.DeleteStoreAsync(id, trackChanges: false);
         return NoContent();
     }
 
     [HttpPut("{id:guid}")]
-    public IActionResult UpdateStore(Guid id, [FromBody] StoreUpdateDto storeUpdateDto)
+    public async Task<IActionResult> UpdateStore(Guid id, [FromBody] StoreUpdateDto storeUpdateDto)
     {
         if (storeUpdateDto is null)
         {
@@ -81,7 +81,7 @@ public class StoresController : ControllerBase
             return UnprocessableEntity(ModelState);
         }
 
-        _service.StoreService.UpdateStore(id, storeUpdateDto, trackChanges: true);
+        await _service.StoreService.UpdateStoreAsync(id, storeUpdateDto, trackChanges: true);
         return NoContent();
     }
 

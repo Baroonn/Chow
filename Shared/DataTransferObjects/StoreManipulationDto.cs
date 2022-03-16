@@ -13,5 +13,5 @@ public abstract record StoreManipulationDto
     public string? Location { get; init; }
     [Required(ErrorMessage="Store phone is a required field")]
     public string? Phone { get; init; }
-    public IEnumerable<MealComponentCreateDto> MealComponents;
+    public IEnumerable<MealComponentCreateDto>? MealComponents;
 }

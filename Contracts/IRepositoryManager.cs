@@ -6,5 +6,5 @@ public interface IRepositoryManager
     IBuyerRepository Buyer { get; }
     IOrderRepository Order { get; }
     IMealComponentRepository MealComponent { get; }
-    void Save();
+    Task SaveAsync();
 }

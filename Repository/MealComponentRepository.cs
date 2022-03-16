@@ -1,5 +1,6 @@
 using Contracts;
 using Entities.Models;
+using Microsoft.EntityFrameworkCore;
 using Repository;
 
 public class MealComponentRepository : RepositoryBase<MealComponent>, IMealComponentRepository
@@ -19,15 +20,15 @@ public class MealComponentRepository : RepositoryBase<MealComponent>, IMealCompo
         Delete(mealComponent);
     }
 
-    public MealComponent GetMealComponent(Guid storeId, Guid mealComponentId, bool trackChanges)
+    public async Task<MealComponent> GetMealComponentAsync(Guid storeId, Guid mealComponentId, bool trackChanges)
     {
-        return FindByCondition(m => m.StoreId.Equals(storeId) && m.Id.Equals(mealComponentId), trackChanges)
-        .SingleOrDefault();
+        return await FindByCondition(m => m.StoreId.Equals(storeId) && m.Id.Equals(mealComponentId), trackChanges)
+        .SingleOrDefaultAsync();
     }
 
-    public IEnumerable<MealComponent> GetMealComponents(Guid storeId, bool trackChanges)
+    public async Task<IEnumerable<MealComponent>> GetMealComponentsAsync(Guid storeId, bool trackChanges)
     {
-        return FindByCondition(m => m.StoreId.Equals(storeId), trackChanges)
-        .OrderBy(m => m.Name).ToList();
+        return await FindByCondition(m => m.StoreId.Equals(storeId), trackChanges)
+        .OrderBy(m => m.Name).ToListAsync();
     }
 }

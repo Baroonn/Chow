@@ -17,21 +17,21 @@ public class MealComponentsController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetMealComponentsForStore(Guid storeId)
+    public async Task<IActionResult> GetMealComponentsForStore(Guid storeId)
     {
-        var mealComponents = _service.MealComponentService.GetMealComponents(storeId, trackChanges: false);
+        var mealComponents = await _service.MealComponentService.GetMealComponentsAsync(storeId, trackChanges: false);
         return Ok(mealComponents);
     }
 
     [HttpGet("{id:guid}", Name = "GetMealComponentForStore")]
-    public IActionResult GetMealComponentForStore(Guid storeId, Guid id)
+    public async Task<IActionResult> GetMealComponentForStore(Guid storeId, Guid id)
     {
-        var mealComponent = _service.MealComponentService.GetMealComponent(storeId, id, trackChanges: false);
+        var mealComponent = await _service.MealComponentService.GetMealComponentAsync(storeId, id, trackChanges: false);
         return Ok(mealComponent);
     }
 
     [HttpPost]
-    public IActionResult CreateMealComponentForStore(Guid storeId, [FromBody] MealComponentCreateDto mealComponentCreateDto)
+    public async Task<IActionResult> CreateMealComponentForStore(Guid storeId, [FromBody] MealComponentCreateDto mealComponentCreateDto)
     {
         if (mealComponentCreateDto is null)
         {
@@ -43,19 +43,19 @@ public class MealComponentsController : ControllerBase
             return UnprocessableEntity(ModelState);
         }
 
-        var mealComponentReadDto = _service.MealComponentService.CreateMealComponentForStore(storeId, mealComponentCreateDto, trackChanges: false);
+        var mealComponentReadDto = await _service.MealComponentService.CreateMealComponentForStoreAsync(storeId, mealComponentCreateDto, trackChanges: false);
         return CreatedAtRoute("GetMealComponentForStore", new { storeId, id = mealComponentReadDto.Id }, mealComponentReadDto);
     }
 
     [HttpDelete("{id:guid}")]
-    public IActionResult DeleteMealComponentForStore(Guid storeId, Guid id)
+    public async Task<IActionResult> DeleteMealComponentForStore(Guid storeId, Guid id)
     {
-        _service.MealComponentService.DeleteMealComponentForStore(storeId, id, trackChanges: false);
+        await _service.MealComponentService.DeleteMealComponentForStoreAsync(storeId, id, trackChanges: false);
         return NoContent();
     }
 
     [HttpPut("{id:guid}")]
-    public IActionResult UpdateMealComponentForStore(Guid storeId, Guid id, [FromBody] MealComponentUpdateDto mealComponentUpdateDto)
+    public async Task<IActionResult> UpdateMealComponentForStore(Guid storeId, Guid id, [FromBody] MealComponentUpdateDto mealComponentUpdateDto)
     {
         if (mealComponentUpdateDto is null)
         {
@@ -67,27 +67,26 @@ public class MealComponentsController : ControllerBase
             return UnprocessableEntity(ModelState);
         }
 
-        _service.MealComponentService.UpdateMealComponentForStore(storeId, id, mealComponentUpdateDto, trackStoreChanges: false, trackMealComponentChanges: true);
+        await _service.MealComponentService.UpdateMealComponentForStoreAsync(storeId, id, mealComponentUpdateDto, trackStoreChanges: false, trackMealComponentChanges: true);
         return NoContent();
     }
 
     [HttpPatch("{id:guid}")]
-    public IActionResult PartiallyUpdateMealComponentForStore(Guid storeId, Guid id, 
-    [FromBody] JsonPatchDocument<MealComponentUpdateDto> patchDoc)
+    public async Task<IActionResult> PartiallyUpdateMealComponentForStore(Guid storeId, Guid id, [FromBody] JsonPatchDocument<MealComponentUpdateDto> patchDoc)
     {
         if(patchDoc is null)
         {
             return BadRequest("patchDoc object sent from client is null");
         }
 
-        var result = _service.MealComponentService.GetMealComponentForPatch(storeId, id, trackStoreChanges: false, trackMealComponentChanges: true);
+        var result = await _service.MealComponentService.GetMealComponentForPatchAsync(storeId, id, trackStoreChanges: false, trackMealComponentChanges: true);
         patchDoc.ApplyTo(result.mealComponentToPatch, ModelState);
         TryValidateModel(result.mealComponentToPatch);
         if (!ModelState.IsValid)
         {
             return UnprocessableEntity(ModelState);
         }
-        _service.MealComponentService.SaveChangesForPatch(result.mealComponentToPatch, result.mealComponent);
+        await _service.MealComponentService.SaveChangesForPatchAsync(result.mealComponentToPatch, result.mealComponent);
         return NoContent();
     }
 }

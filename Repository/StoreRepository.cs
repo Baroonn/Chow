@@ -1,5 +1,6 @@
 using Contracts;
 using Entities.Models;
+using Microsoft.EntityFrameworkCore;
 using Repository;
 
 public class StoreRepository : RepositoryBase<Store>, IStoreRepository
@@ -19,21 +20,21 @@ public class StoreRepository : RepositoryBase<Store>, IStoreRepository
         Delete(store);
     }
 
-    public IEnumerable<Store> GetAllStores(bool trackChanges)
+    public async Task<IEnumerable<Store>> GetAllStoresAsync(bool trackChanges)
     {
-        return FindAll(trackChanges)
+        return await FindAll(trackChanges)
         .OrderBy(s => s.Name)
-        .ToList();
+        .ToListAsync();
     }
 
-    public Store GetStore(Guid storeId, bool trackChanges)
+    public async Task<Store> GetStoreAsync(Guid storeId, bool trackChanges)
     {
-        return FindByCondition(s => s.Id.Equals(storeId), trackChanges)
-        .SingleOrDefault();
+        return await FindByCondition(s => s.Id.Equals(storeId), trackChanges)
+        .SingleOrDefaultAsync();
     }
 
-    public IEnumerable<Store> GetStoresByIds(IEnumerable<Guid> ids, bool trackChanges)
+    public async Task<IEnumerable<Store>> GetStoresByIdsAsync(IEnumerable<Guid> ids, bool trackChanges)
     {
-        return FindByCondition(s => ids.Contains(s.Id), trackChanges).ToList();
+        return await FindByCondition(s => ids.Contains(s.Id), trackChanges).ToListAsync();
     }
 }

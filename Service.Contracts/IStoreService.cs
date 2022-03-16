@@ -5,11 +5,11 @@ namespace Service.Contracts;
 
 public interface IStoreService
 {
-    IEnumerable<StoreReadDto> GetAllStores(bool trackChanges);
-    StoreReadDto GetStore(Guid storeId, bool trackChanges);
-    StoreReadDto CreateStore(StoreCreateDto store);
-    IEnumerable<StoreReadDto> GetStoresByIds(IEnumerable<Guid> ids, bool trackChanges);
-    (IEnumerable<StoreReadDto> storeReadDtoCollection, string ids) CreateStoreCollection(IEnumerable<StoreCreateDto> storeCollection);
-    void DeleteStore(Guid storeId, bool trackChanges);
-    void UpdateStore(Guid storeId, StoreUpdateDto storeUpdateDto, bool trackChanges);
+    Task<IEnumerable<StoreReadDto>> GetAllStoresAsync(bool trackChanges);
+    Task<StoreReadDto> GetStoreAsync(Guid storeId, bool trackChanges);
+    Task<StoreReadDto> CreateStoreAsync(StoreCreateDto store);
+    Task<IEnumerable<StoreReadDto>> GetStoresByIdsAsync(IEnumerable<Guid> ids, bool trackChanges);
+    Task<(IEnumerable<StoreReadDto> storeReadDtoCollection, string ids)> CreateStoreCollectionAsync(IEnumerable<StoreCreateDto> storeCollection);
+    Task DeleteStoreAsync(Guid storeId, bool trackChanges);
+    Task UpdateStoreAsync(Guid storeId, StoreUpdateDto storeUpdateDto, bool trackChanges);
 }

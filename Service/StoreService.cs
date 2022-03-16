@@ -19,17 +19,17 @@ internal sealed class StoreService : IStoreService
         _mapper = mapper;
     }
 
-    public StoreReadDto CreateStore(StoreCreateDto storeCreateDto)
+    public async Task<StoreReadDto> CreateStoreAsync(StoreCreateDto storeCreateDto)
     {
         var store = _mapper.Map<Store>(storeCreateDto);
         _repository.Store.CreateStore(store);
-        _repository.Save();
+        await _repository.SaveAsync();
 
         var storeReadDto = _mapper.Map<StoreReadDto>(store);
         return storeReadDto;
     }
 
-    public (IEnumerable<StoreReadDto> storeReadDtoCollection, string ids) CreateStoreCollection(IEnumerable<StoreCreateDto> storeCreateDtoCollection)
+    public async Task<(IEnumerable<StoreReadDto> storeReadDtoCollection, string ids)> CreateStoreCollectionAsync(IEnumerable<StoreCreateDto> storeCreateDtoCollection)
     {
         if(storeCreateDtoCollection is null)
         {
@@ -41,7 +41,7 @@ internal sealed class StoreService : IStoreService
         {
             _repository.Store.CreateStore(store);
         }
-        _repository.Save();
+        await _repository.SaveAsync();
 
         var storeReadDtoCollection = _mapper.Map<IEnumerable<StoreReadDto>>(storeCollection);
         var ids = string.Join(',', storeReadDtoCollection.Select(s => s.Id));
@@ -49,29 +49,28 @@ internal sealed class StoreService : IStoreService
         return (storeReadDtoCollection: storeReadDtoCollection, ids: ids);
     }
 
-    public void DeleteStore(Guid storeId, bool trackChanges)
+    public async Task DeleteStoreAsync(Guid storeId, bool trackChanges)
     {
-        var store = _repository.Store.GetStore(storeId, trackChanges);
+        var store = await _repository.Store.GetStoreAsync(storeId, trackChanges);
         if (store is null)
         {
             throw new StoreNotFoundException(storeId);
         }
 
         _repository.Store.DeleteStore(store);
-        _repository.Save();
+        await _repository.SaveAsync();
     }
 
-    public IEnumerable<StoreReadDto> GetAllStores(bool trackChanges)
+    public async Task<IEnumerable<StoreReadDto>> GetAllStoresAsync(bool trackChanges)
     {
         
-        var stores = _repository.Store.GetAllStores(trackChanges);
+        var stores = await _repository.Store.GetAllStoresAsync(trackChanges);
         var storesReadDto = _mapper.Map<IEnumerable<StoreReadDto>>(stores);
         return storesReadDto;
     }
-
-    public StoreReadDto GetStore(Guid storeId, bool trackChanges)
+    public async Task<StoreReadDto> GetStoreAsync(Guid storeId, bool trackChanges)
     {
-        var store = _repository.Store.GetStore(storeId, trackChanges);
+        var store = await _repository.Store.GetStoreAsync(storeId, trackChanges);
         if (store is null)
         {
             throw new StoreNotFoundException(storeId);
@@ -79,15 +78,14 @@ internal sealed class StoreService : IStoreService
         var storeReadDto = _mapper.Map<StoreReadDto>(store);
         return storeReadDto;
     }
-
-    public IEnumerable<StoreReadDto> GetStoresByIds(IEnumerable<Guid> ids, bool trackChanges)
+    public async Task<IEnumerable<StoreReadDto>> GetStoresByIdsAsync(IEnumerable<Guid> ids, bool trackChanges)
     {
         if (ids is null)
         {
             throw new IdParametersBadRequestException();
         }
 
-        var stores = _repository.Store.GetStoresByIds(ids, trackChanges);
+        var stores = await _repository.Store.GetStoresByIdsAsync(ids, trackChanges);
         if (ids.Count() != stores.Count())
         {
             throw new CollectionsByIdsBadRequestException();
@@ -96,15 +94,15 @@ internal sealed class StoreService : IStoreService
         return storesReadDto;
     }
 
-    public void UpdateStore(Guid storeId, StoreUpdateDto storeUpdateDto, bool trackChanges)
+    public async Task UpdateStoreAsync(Guid storeId, StoreUpdateDto storeUpdateDto, bool trackChanges)
     {
-        var store = _repository.Store.GetStore(storeId, trackChanges);
+        var store = await _repository.Store.GetStoreAsync(storeId, trackChanges);
         if(store is null)
         {
             throw new StoreNotFoundException(storeId);
         }
 
         _mapper.Map(storeUpdateDto, store);
-        _repository.Save();
+        await _repository.SaveAsync();
     }
 }
