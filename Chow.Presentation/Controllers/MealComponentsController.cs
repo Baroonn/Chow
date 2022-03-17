@@ -1,8 +1,10 @@
+using System.Text.Json;
 using Chow.Presentation.ActionFilters;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Shared.RequestFeatures;
 
 namespace Chow.Presentation.Controllers;
 
@@ -18,10 +20,11 @@ public class MealComponentsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetMealComponentsForStore(Guid storeId)
+    public async Task<IActionResult> GetMealComponentsForStore(Guid storeId, [FromQuery] MealComponentParameters mealComponentParameters)
     {
-        var mealComponents = await _service.MealComponentService.GetMealComponentsAsync(storeId, trackChanges: false);
-        return Ok(mealComponents);
+        var pagedResult = await _service.MealComponentService.GetMealComponentsAsync(storeId, mealComponentParameters, trackChanges: false);
+        Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagedResult.paginationMetaData));
+        return Ok(pagedResult.mealComponentReadDtos);
     }
 
     [HttpGet("{id:guid}", Name = "GetMealComponentForStore")]

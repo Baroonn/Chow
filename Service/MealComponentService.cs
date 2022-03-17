@@ -4,6 +4,7 @@ using Entities.Exceptions;
 using Entities.Models;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Shared.RequestFeatures;
 
 namespace Service;
 
@@ -79,12 +80,13 @@ internal sealed class MealComponentService : IMealComponentService
         return (mealComponentToPatch, mealComponent);
     }
 
-    public async Task<IEnumerable<MealComponentReadDto>> GetMealComponentsAsync(Guid storeId, bool trackChanges)
+    public async Task<(IEnumerable<MealComponentReadDto> mealComponentReadDtos, PaginationMetaData paginationMetaData)> GetMealComponentsAsync(Guid storeId, MealComponentParameters mealComponentParameters, bool trackChanges)
     {
         var store = await GetStoreAndCheckIfItExists(storeId, trackChanges);
-        var mealComponents = await _repository.MealComponent.GetMealComponentsAsync(storeId, trackChanges);
-        var mealComponentsReadDto = _mapper.Map<IEnumerable<MealComponentReadDto>>(mealComponents);
-        return mealComponentsReadDto;
+
+        var mealComponentsWithMetaData = await _repository.MealComponent.GetMealComponentsAsync(storeId, mealComponentParameters, trackChanges);
+        var mealComponentReadDtos = _mapper.Map<IEnumerable<MealComponentReadDto>>(mealComponentsWithMetaData);
+        return (mealComponentReadDtos, paginationMetaData: mealComponentsWithMetaData.PaginationMetaData);
     }
 
     public async Task SaveChangesForPatchAsync(MealComponentUpdateDto mealComponentToPatch, MealComponent mealComponent)
