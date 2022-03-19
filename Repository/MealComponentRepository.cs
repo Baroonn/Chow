@@ -2,6 +2,7 @@ using Contracts;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
 using Repository;
+using Repository.Extensions;
 using Shared.RequestFeatures;
 
 public class MealComponentRepository : RepositoryBase<MealComponent>, IMealComponentRepository
@@ -30,9 +31,10 @@ public class MealComponentRepository : RepositoryBase<MealComponent>, IMealCompo
     public async Task<PagedList<MealComponent>> GetMealComponentsAsync(Guid storeId, MealComponentParameters mealComponentParameters, bool trackChanges)
     {
         var mealComponents = await FindByCondition(m => m.StoreId.Equals(storeId), trackChanges)
+        .Search(mealComponentParameters.SearchTerm)
+        .FilterByType(mealComponentParameters.Type)
         .OrderBy(m => m.Name)
-        .Skip((mealComponentParameters.PageNumber-1)*mealComponentParameters.PageSize)
-        .Take(mealComponentParameters.PageSize)
+        .Paginate(mealComponentParameters.PageNumber, mealComponentParameters.PageSize)
         .ToListAsync();
 
         var count = await FindByCondition(m => m.StoreId.Equals(storeId), trackChanges)
