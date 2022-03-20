@@ -1,9 +1,11 @@
+using System.Text.Json;
 using Chow.Presentation.ActionFilters;
 using Chow.Presentation.ModelBinders;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Shared.RequestFeatures;
 
 namespace Chow.Presentation.Controllers;
 
@@ -19,10 +21,11 @@ public class StoresController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetStores()
+    public async Task<IActionResult> GetStores([FromQuery] StoreParameters storeParameters)
     {
-        var stores = await _service.StoreService.GetAllStoresAsync(trackChanges: false);
-        return Ok(stores);
+        var result = await _service.StoreService.GetAllStoresAsync(storeParameters, trackChanges: false);
+        Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(result.metaData));
+        return Ok(result.storeReadDtos);
     }
 
     [HttpGet("{id:guid}", Name="StoreById")]

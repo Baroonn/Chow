@@ -4,6 +4,7 @@ using Entities.Models;
 using Shared.DataTransferObjects;
 using AutoMapper;
 using Entities.Exceptions;
+using Shared.RequestFeatures;
 
 namespace Service;
 
@@ -67,12 +68,12 @@ internal sealed class StoreService : IStoreService
         await _repository.SaveAsync();
     }
 
-    public async Task<IEnumerable<StoreReadDto>> GetAllStoresAsync(bool trackChanges)
+    public async Task<(IEnumerable<StoreReadDto> storeReadDtos, PaginationMetaData metaData)> GetAllStoresAsync(StoreParameters storeParameters, bool trackChanges)
     {
         
-        var stores = await _repository.Store.GetAllStoresAsync(trackChanges);
-        var storesReadDto = _mapper.Map<IEnumerable<StoreReadDto>>(stores);
-        return storesReadDto;
+        var storesWithMetaData = await _repository.Store.GetAllStoresAsync(storeParameters, trackChanges);
+        var storeReadDtos = _mapper.Map<IEnumerable<StoreReadDto>>(storesWithMetaData);
+        return (storeReadDtos, metaData:storesWithMetaData.PaginationMetaData);
     }
     public async Task<StoreReadDto> GetStoreAsync(Guid storeId, bool trackChanges)
     {

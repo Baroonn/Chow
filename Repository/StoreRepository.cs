@@ -2,6 +2,8 @@ using Contracts;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
 using Repository;
+using Repository.Extensions;
+using Shared.RequestFeatures;
 
 public class StoreRepository : RepositoryBase<Store>, IStoreRepository
 {
@@ -20,11 +22,16 @@ public class StoreRepository : RepositoryBase<Store>, IStoreRepository
         Delete(store);
     }
 
-    public async Task<IEnumerable<Store>> GetAllStoresAsync(bool trackChanges)
+    public async Task<PagedList<Store>> GetAllStoresAsync(StoreParameters storeParameters, bool trackChanges)
     {
-        return await FindAll(trackChanges)
+        var stores = await FindAll(trackChanges)
         .OrderBy(s => s.Name)
+        .Paginate(storeParameters.PageNumber, storeParameters.PageSize)
         .ToListAsync();
+
+        var count = await FindAll(trackChanges).CountAsync();
+
+        return new PagedList<Store>(stores, count, storeParameters.PageNumber, storeParameters.PageSize);
     }
 
     public async Task<Store> GetStoreAsync(Guid storeId, bool trackChanges)

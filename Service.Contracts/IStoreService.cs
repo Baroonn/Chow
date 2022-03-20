@@ -1,12 +1,13 @@
 
 using Entities.Models;
 using Shared.DataTransferObjects;
+using Shared.RequestFeatures;
 
 namespace Service.Contracts;
 
 public interface IStoreService
 {
-    Task<IEnumerable<StoreReadDto>> GetAllStoresAsync(bool trackChanges);
+    Task<(IEnumerable<StoreReadDto> storeReadDtos, PaginationMetaData metaData)> GetAllStoresAsync(StoreParameters storeParameters, bool trackChanges);
     Task<StoreReadDto> GetStoreAsync(Guid storeId, bool trackChanges);
     Task<StoreReadDto> CreateStoreAsync(StoreCreateDto store);
     Task<IEnumerable<StoreReadDto>> GetStoresByIdsAsync(IEnumerable<Guid> ids, bool trackChanges);
