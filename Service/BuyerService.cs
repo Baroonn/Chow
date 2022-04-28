@@ -4,6 +4,7 @@ using Entities.Exceptions;
 using Entities.Models;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Shared.RequestFeatures;
 
 namespace Service;
 
@@ -45,12 +46,12 @@ internal sealed class BuyerService : IBuyerService
         _repository.Buyer.DeleteBuyer(buyer);
         await _repository.SaveAsync();
     }
-
-    public async Task<IEnumerable<BuyerReadDto>> GetAllBuyersAsync(bool trackChanges)
+    
+    public async Task<(IEnumerable<BuyerReadDto> buyers, PaginationMetaData metaData)> GetAllBuyersAsync(BuyerParameters buyerParameters, bool trackChanges)
     {
-        var buyers = await _repository.Buyer.GetAllBuyersAsync(trackChanges);
+        var buyers = await _repository.Buyer.GetAllBuyersAsync(buyerParameters, trackChanges);
         var buyersReadDto = _mapper.Map<IEnumerable<BuyerReadDto>>(buyers);
-        return buyersReadDto;  
+        return (buyers: buyersReadDto, metaData: buyers.PaginationMetaData);  
     }
 
     public async Task<BuyerReadDto> GetBuyerAsync(Guid buyerId, bool trackChanges)

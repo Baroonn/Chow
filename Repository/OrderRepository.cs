@@ -2,6 +2,7 @@ using Contracts;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
 using Repository;
+using Shared.RequestFeatures;
 
 public class OrderRepository : RepositoryBase<Order>, IOrderRepository
 {
@@ -17,16 +18,28 @@ public class OrderRepository : RepositoryBase<Order>, IOrderRepository
         Create(order);
     }
 
-    public async Task<IEnumerable<Order>> GetOrdersForBuyerAsync(Guid buyerId, bool trackChanges)
+    public async Task<PagedList<Order>> GetOrdersForBuyerAsync(Guid buyerId, OrderParameters orderParameters, bool trackChanges)
     {
-        return await FindByCondition(o => o.BuyerId.Equals(buyerId), trackChanges)
+        var buyerOrders = await FindByCondition(o => o.BuyerId.Equals(buyerId), trackChanges)
+            .Skip((orderParameters.PageNumber-1)*orderParameters.PageSize)
+            .Take(orderParameters.PageSize)
             .ToListAsync();
+
+        var count = await FindByCondition(o => o.BuyerId.Equals(buyerId), trackChanges).CountAsync();
+
+        return new PagedList<Order>(buyerOrders, count, orderParameters.PageNumber, orderParameters.PageSize);
     }
 
-    public async Task<IEnumerable<Order>> GetOrdersForStoreAsync(Guid storeId, bool trackChanges)
+    public async Task<PagedList<Order>> GetOrdersForStoreAsync(Guid storeId, OrderParameters orderParameters, bool trackChanges)
     {
-        return await FindByCondition(o => o.StoreId.Equals(storeId), trackChanges)
+        var storeOrders = await FindByCondition(o => o.StoreId.Equals(storeId), trackChanges)
+            .Skip((orderParameters.PageNumber - 1) * orderParameters.PageSize)
+            .Take(orderParameters.PageSize)
             .ToListAsync();
+
+        var count = await FindByCondition(o => o.StoreId.Equals(storeId), trackChanges).CountAsync();
+
+        return new PagedList<Order>(storeOrders, count, orderParameters.PageNumber, orderParameters.PageSize);
     }
 
     public async Task<Order> GetSingleOrderForBuyerAsync(Guid buyerId, Guid orderId, bool trackChanges)

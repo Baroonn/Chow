@@ -4,6 +4,7 @@ using Entities.Exceptions;
 using Entities.Models;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Shared.RequestFeatures;
 
 namespace Service;
 
@@ -69,20 +70,20 @@ internal sealed class OrderService : IOrderService
         return orderReadDto;
     }
 
-    public async Task<IEnumerable<OrderReadDto>> GetAllOrdersForBuyerAsync(Guid buyerId, bool trackChanges)
+    public async Task<(IEnumerable<OrderReadDto> buyerOrders, PaginationMetaData metaData)> GetAllOrdersForBuyerAsync(Guid buyerId, OrderParameters orderParameters, bool trackChanges)
     {
         var buyer = await GetBuyerAndCheckIfItExists(buyerId, trackChanges);
-        var orders = await _repository.Order.GetOrdersForBuyerAsync(buyerId, trackChanges);
+        var orders = await _repository.Order.GetOrdersForBuyerAsync(buyerId, orderParameters, trackChanges);
         var ordersReadDto = _mapper.Map<IEnumerable<OrderReadDto>>(orders);
-        return ordersReadDto;
+        return (buyerOrders: ordersReadDto, metaData: orders.PaginationMetaData);
     }
 
-    public async Task<IEnumerable<OrderReadDto>> GetAllOrdersForStoreAsync(Guid storeId, bool trackChanges)
+    public async Task<(IEnumerable<OrderReadDto> storeOrders, PaginationMetaData metaData)> GetAllOrdersForStoreAsync(Guid storeId, OrderParameters orderParameters, bool trackChanges)
     {
         var store = await GetStoreAndCheckIfItExists(storeId, trackChanges);
-        var orders = await _repository.Order.GetOrdersForStoreAsync(storeId, trackChanges);
+        var orders = await _repository.Order.GetOrdersForStoreAsync(storeId, orderParameters, trackChanges);
         var ordersReadDto = _mapper.Map<IEnumerable<OrderReadDto>>(orders);
-        return ordersReadDto;
+        return (storeOrders: ordersReadDto, metaData: orders.PaginationMetaData);
     }
 
     public async Task<OrderReadDto> GetOrderForBuyerAsync(Guid buyerId, Guid orderId, bool trackChanges)

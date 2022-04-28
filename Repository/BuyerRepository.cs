@@ -20,13 +20,17 @@ public class BuyerRepository : RepositoryBase<Buyer>, IBuyerRepository
         Delete(buyer);
     }
 
-    public async Task<IEnumerable<Buyer>> GetAllBuyersAsync(BuyerParameters buyerParameters, bool trackChanges)
+    public async Task<PagedList<Buyer>> GetAllBuyersAsync(BuyerParameters buyerParameters, bool trackChanges)
     {
-        return await FindAll(trackChanges)
+        var buyers =  await FindAll(trackChanges)
             .OrderBy(b => b.Name)
             .Skip((buyerParameters.PageNumber - 1) * buyerParameters.PageSize)
             .Take(buyerParameters.PageSize)
             .ToListAsync();
+
+        var count = await FindAll(trackChanges).CountAsync();
+
+        return new PagedList<Buyer>(buyers, count, buyerParameters.PageNumber, buyerParameters.PageSize);
     }
 
     public async Task<Buyer> GetBuyerAsync(Guid buyerId, bool trackChanges)

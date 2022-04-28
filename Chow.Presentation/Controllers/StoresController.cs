@@ -93,10 +93,11 @@ public class StoresController : ControllerBase
     }
 
     [HttpGet("{id:guid}/orders")]
-    public async Task<IActionResult> GetAllOrdersForStore(Guid id)
+    public async Task<IActionResult> GetAllOrdersForStore(Guid id, [FromQuery] OrderParameters orderParameters)
     {
-        var orders = await _service.OrderService.GetAllOrdersForStoreAsync(id, trackChanges: false);
-        return Ok(orders);
+        var pagedResult = await _service.OrderService.GetAllOrdersForStoreAsync(id, orderParameters, trackChanges: false);
+        Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagedResult.metaData));
+        return Ok(pagedResult.storeOrders);
     }
 
     [HttpGet("{id:guid}/orders/{orderId:guid}")]

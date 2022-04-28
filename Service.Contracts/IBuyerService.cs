@@ -1,11 +1,12 @@
 using Entities.Models;
 using Shared.DataTransferObjects;
+using Shared.RequestFeatures;
 
 namespace Service.Contracts;
 
 public interface IBuyerService
 {
-    Task<IEnumerable<BuyerReadDto>> GetAllBuyersAsync(bool trackChanges);
+    Task<(IEnumerable<BuyerReadDto> buyers, PaginationMetaData metaData) > GetAllBuyersAsync(BuyerParameters buyerParameters, bool trackChanges);
     Task<BuyerReadDto> GetBuyerAsync(Guid buyerId, bool trackChanges);
     Task<BuyerReadDto> CreateBuyerAsync(BuyerCreateDto buyerCreateDto);
     Task DeleteBuyerAsync(Guid buyerId, bool trackChanges);

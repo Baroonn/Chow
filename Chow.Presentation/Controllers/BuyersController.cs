@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Chow.Presentation.ActionFilters;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Shared.RequestFeatures;
 
 namespace Chow.Presentation.Controllers
 {
@@ -75,10 +77,11 @@ namespace Chow.Presentation.Controllers
         }
 
         [HttpGet("{id:guid}/orders")]
-        public async Task<IActionResult> GetOrdersForBuyer(Guid id)
+        public async Task<IActionResult> GetOrdersForBuyer(Guid id, [FromQuery] OrderParameters orderParameters)
         {
-            var ordersReadDto = await _service.OrderService.GetAllOrdersForBuyerAsync(id, trackChanges:false);
-            return Ok(ordersReadDto);
+            var pagedResult = await _service.OrderService.GetAllOrdersForBuyerAsync(id, orderParameters, trackChanges:false);
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagedResult.metaData));
+            return Ok(pagedResult.buyerOrders);
         }
 
         [HttpGet("{id:guid}/orders/{orderId:guid}", Name ="GetOrderForBuyer")]
