@@ -13,5 +13,10 @@ public class MappingProfile: Profile
         CreateMap<MealComponentCreateDto, MealComponent>();
         CreateMap<MealComponentUpdateDto, MealComponent>().ReverseMap();
         CreateMap<StoreUpdateDto, Store>().ReverseMap();
+        CreateMap<Buyer, BuyerReadDto>();
+        CreateMap<BuyerCreateDto, Buyer>();
+        CreateMap<BuyerUpdateDto, Buyer>().ReverseMap();
+        CreateMap<Order, OrderReadDto>();
+        CreateMap<OrderCreateDto, Order>();
     }
 }

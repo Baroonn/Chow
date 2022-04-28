@@ -28,6 +28,11 @@ public sealed class RepositoryManager : IRepositoryManager
 
     public IMealComponentRepository MealComponent => _mealComponentRepository.Value;
 
+    public void Save()
+    {
+        _repositoryContext.SaveChanges();
+    }
+
     public async Task SaveAsync()
     {
         await _repositoryContext.SaveChangesAsync();

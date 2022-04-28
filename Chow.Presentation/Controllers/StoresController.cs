@@ -92,4 +92,18 @@ public class StoresController : ControllerBase
 
     }
 
+    [HttpGet("{id:guid}/orders")]
+    public async Task<IActionResult> GetAllOrdersForStore(Guid id)
+    {
+        var orders = await _service.OrderService.GetAllOrdersForStoreAsync(id, trackChanges: false);
+        return Ok(orders);
+    }
+
+    [HttpGet("{id:guid}/orders/{orderId:guid}")]
+    public async Task<IActionResult> GetAllOrdersForStore(Guid id, Guid orderId)
+    {
+        var order = await _service.OrderService.GetOrderForStoreAsync(id, orderId, trackChanges: false);
+        return Ok(order);
+    }
+
 }

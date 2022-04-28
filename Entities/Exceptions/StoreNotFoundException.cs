@@ -1,4 +1,4 @@
-using Entities.Exceptions;
+namespace Entities.Exceptions;
 
 public sealed class StoreNotFoundException : NotFoundException
 {
