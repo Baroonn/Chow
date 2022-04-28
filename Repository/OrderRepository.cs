@@ -21,6 +21,7 @@ public class OrderRepository : RepositoryBase<Order>, IOrderRepository
     public async Task<PagedList<Order>> GetOrdersForBuyerAsync(Guid buyerId, OrderParameters orderParameters, bool trackChanges)
     {
         var buyerOrders = await FindByCondition(o => o.BuyerId.Equals(buyerId), trackChanges)
+            .OrderBy(o => o.BuyerId)
             .Skip((orderParameters.PageNumber-1)*orderParameters.PageSize)
             .Take(orderParameters.PageSize)
             .ToListAsync();
@@ -33,6 +34,7 @@ public class OrderRepository : RepositoryBase<Order>, IOrderRepository
     public async Task<PagedList<Order>> GetOrdersForStoreAsync(Guid storeId, OrderParameters orderParameters, bool trackChanges)
     {
         var storeOrders = await FindByCondition(o => o.StoreId.Equals(storeId), trackChanges)
+            .OrderBy(o => o.BuyerId)
             .Skip((orderParameters.PageNumber - 1) * orderParameters.PageSize)
             .Take(orderParameters.PageSize)
             .ToListAsync();
