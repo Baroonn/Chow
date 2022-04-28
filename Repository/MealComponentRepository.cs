@@ -33,7 +33,7 @@ public class MealComponentRepository : RepositoryBase<MealComponent>, IMealCompo
         var mealComponents = await FindByCondition(m => m.StoreId.Equals(storeId), trackChanges)
         .Search(mealComponentParameters.SearchTerm)
         .FilterByType(mealComponentParameters.Type)
-        .OrderBy(m => m.Name)
+        .Sort(mealComponentParameters.OrderBy)
         .Paginate(mealComponentParameters.PageNumber, mealComponentParameters.PageSize)
         .ToListAsync();
 

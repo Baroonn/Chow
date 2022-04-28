@@ -25,7 +25,7 @@ public class StoreRepository : RepositoryBase<Store>, IStoreRepository
     public async Task<PagedList<Store>> GetAllStoresAsync(StoreParameters storeParameters, bool trackChanges)
     {
         var stores = await FindAll(trackChanges)
-        .OrderBy(s => s.Name)
+        .Sort(storeParameters.OrderBy)
         .Paginate(storeParameters.PageNumber, storeParameters.PageSize)
         .ToListAsync();
 

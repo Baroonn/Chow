@@ -1,5 +1,6 @@
 using Entities.Models;
-
+using Repository.Extensions.Utility;
+using System.Linq.Dynamic.Core;
 namespace Repository.Extensions;
 
 public static class RepositoryMealComponentExtensions
@@ -30,5 +31,22 @@ public static class RepositoryMealComponentExtensions
 
         var lowercaseSearchTerm = searchTerm.Trim().ToLower();
         return mealComponents.Where(m => m.Name.ToLower().Contains(lowercaseSearchTerm));
+    }
+
+    public static IQueryable<MealComponent> Sort(this IQueryable<MealComponent> mealComponents, string orderByQueryString)
+    {
+        if (string.IsNullOrWhiteSpace(orderByQueryString))
+        {
+            return mealComponents.OrderBy(s => s.Name);
+        }
+
+        var orderQuery = OrderQueryBuilder.CreateOrderQuery<MealComponent>(orderByQueryString);
+
+        if (string.IsNullOrWhiteSpace(orderQuery))
+        {
+            return mealComponents.OrderBy(m => m.Name);
+        }
+
+        return mealComponents.OrderBy(orderQuery);
     }
 }
