@@ -2,6 +2,7 @@ using Contracts;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
 using Repository;
+using Repository.Extensions;
 using Shared.RequestFeatures;
 
 public class OrderRepository : RepositoryBase<Order>, IOrderRepository
@@ -21,9 +22,8 @@ public class OrderRepository : RepositoryBase<Order>, IOrderRepository
     public async Task<PagedList<Order>> GetOrdersForBuyerAsync(Guid buyerId, OrderParameters orderParameters, bool trackChanges)
     {
         var buyerOrders = await FindByCondition(o => o.BuyerId.Equals(buyerId), trackChanges)
-            .OrderBy(o => o.BuyerId)
-            .Skip((orderParameters.PageNumber-1)*orderParameters.PageSize)
-            .Take(orderParameters.PageSize)
+            .Sort(orderParameters.OrderBy)
+            .Paginate(orderParameters.PageNumber, orderParameters.PageSize)
             .ToListAsync();
 
         var count = await FindByCondition(o => o.BuyerId.Equals(buyerId), trackChanges).CountAsync();
@@ -34,9 +34,8 @@ public class OrderRepository : RepositoryBase<Order>, IOrderRepository
     public async Task<PagedList<Order>> GetOrdersForStoreAsync(Guid storeId, OrderParameters orderParameters, bool trackChanges)
     {
         var storeOrders = await FindByCondition(o => o.StoreId.Equals(storeId), trackChanges)
-            .OrderBy(o => o.BuyerId)
-            .Skip((orderParameters.PageNumber - 1) * orderParameters.PageSize)
-            .Take(orderParameters.PageSize)
+            .Sort(orderParameters.OrderBy)
+            .Paginate(orderParameters.PageNumber, orderParameters.PageSize)
             .ToListAsync();
 
         var count = await FindByCondition(o => o.StoreId.Equals(storeId), trackChanges).CountAsync();
