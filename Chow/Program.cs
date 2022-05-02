@@ -1,3 +1,4 @@
+using AspNetCoreRateLimit;
 using Chow.Extensions;
 using Chow.Presentation.ActionFilters;
 using Contracts;
@@ -27,6 +28,9 @@ builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.ConfigureVersioning();
 builder.Services.ConfigureResponseCaching();
 builder.Services.ConfigureHttpCacheHeaders();
+builder.Services.AddMemoryCache();
+builder.Services.ConfigureRateLimitingOptions();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
@@ -68,6 +72,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.All
 });
+app.UseIpRateLimiting();
 app.UseCors("CorsPolicy");
 app.UseResponseCaching();
 app.UseHttpCacheHeaders();
