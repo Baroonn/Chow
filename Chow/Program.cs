@@ -31,6 +31,7 @@ builder.Services.ConfigureHttpCacheHeaders();
 builder.Services.AddMemoryCache();
 builder.Services.ConfigureRateLimitingOptions();
 builder.Services.AddHttpContextAccessor();
+builder.Services.ConfigureSwagger();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
@@ -65,7 +66,11 @@ if(app.Environment.IsProduction())
 //     app.UseSwagger();
 //     app.UseSwaggerUI();
 // }
-
+app.UseSwagger();
+app.UseSwaggerUI(s =>
+{
+    s.SwaggerEndpoint("/swagger/v1/swagger.json", "Chow API");
+});
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseForwardedHeaders(new ForwardedHeadersOptions

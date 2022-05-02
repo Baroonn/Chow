@@ -4,6 +4,7 @@ using LoggerService;
 using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using Repository;
 using Service;
 using Service.Contracts;
@@ -92,5 +93,13 @@ public static class ServiceExtensions
         services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
     }
 
+    public static void ConfigureSwagger(this IServiceCollection services)
+    {
+        services.AddSwaggerGen(s =>
+        {
+            s.SwaggerDoc("v1", new OpenApiInfo { Title = "Chow API", Version = "v1" });
+            //s.SwaggerDoc("v2", new OpenApiInfo { Title = "Chow API", Version = "v2" });
+        });
+    }
 
 }

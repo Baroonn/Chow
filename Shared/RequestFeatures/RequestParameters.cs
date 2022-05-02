@@ -18,5 +18,5 @@ public abstract class RequestParameters
         }
     }
     public string? OrderBy { get; set; } = "Id";
-    public string? Field { get; set; }
+    public string? Fields { get; set; }
 }

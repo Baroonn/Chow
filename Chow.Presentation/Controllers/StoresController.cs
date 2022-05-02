@@ -97,7 +97,7 @@ public class StoresController : ControllerBase
     }
 
     [HttpGet("{id:guid}/orders")]
-    [HttpHead]
+    [HttpHead("{id:guid}/orders")]
     public async Task<IActionResult> GetAllOrdersForStore(Guid id, [FromQuery] OrderParameters orderParameters)
     {
         var pagedResult = await _service.OrderService.GetAllOrdersForStoreAsync(id, orderParameters, trackChanges: false);
