@@ -8,7 +8,8 @@ using Shared.RequestFeatures;
 
 namespace Chow.Presentation.Controllers;
 
-[Route("api/stores/{storeId}/components")]
+[ApiVersion("1.0")]
+[Route("api/{v:apiversion}/stores/{storeId}/components")]
 [ApiController]
 public class MealComponentsController : ControllerBase
 {
@@ -20,6 +21,7 @@ public class MealComponentsController : ControllerBase
     }
 
     [HttpGet]
+    [HttpHead]
     public async Task<IActionResult> GetMealComponentsForStore(Guid storeId, [FromQuery] MealComponentParameters mealComponentParameters)
     {
         var pagedResult = await _service.MealComponentService.GetMealComponentsAsync(storeId, mealComponentParameters, trackChanges: false);

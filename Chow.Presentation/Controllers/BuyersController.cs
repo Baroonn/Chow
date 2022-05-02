@@ -13,7 +13,9 @@ using Shared.RequestFeatures;
 
 namespace Chow.Presentation.Controllers
 {
-    [Route("api/buyers")]
+
+    [ApiVersion("1.0")]
+    [Route("api/{v:apiversion}/buyers")]
     [ApiController]
     public class BuyersController : ControllerBase
     {

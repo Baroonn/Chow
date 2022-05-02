@@ -9,8 +9,10 @@ using Shared.RequestFeatures;
 
 namespace Chow.Presentation.Controllers;
 
-[Route("api/stores")]
+[ApiVersion("1.0")]
+[Route("api/{v:apiversion}/stores")]
 [ApiController]
+//[ResponseCache(CacheProfileName = "120SecondsDuration")]
 public class StoresController : ControllerBase
 {
     private readonly IServiceManager _service;
@@ -21,6 +23,7 @@ public class StoresController : ControllerBase
     }
 
     [HttpGet]
+    [HttpHead]
     public async Task<IActionResult> GetStores([FromQuery] StoreParameters storeParameters)
     {
         var result = await _service.StoreService.GetAllStoresAsync(storeParameters, trackChanges: false);
@@ -29,6 +32,7 @@ public class StoresController : ControllerBase
     }
 
     [HttpGet("{id:guid}", Name="StoreById")]
+    //[ResponseCache(Duration = 60)]
     public async Task<IActionResult> GetStore(Guid id)
     {
         var store = await _service.StoreService.GetStoreAsync(id, trackChanges: false);
@@ -93,6 +97,7 @@ public class StoresController : ControllerBase
     }
 
     [HttpGet("{id:guid}/orders")]
+    [HttpHead]
     public async Task<IActionResult> GetAllOrdersForStore(Guid id, [FromQuery] OrderParameters orderParameters)
     {
         var pagedResult = await _service.OrderService.GetAllOrdersForStoreAsync(id, orderParameters, trackChanges: false);
@@ -105,6 +110,13 @@ public class StoresController : ControllerBase
     {
         var order = await _service.OrderService.GetOrderForStoreAsync(id, orderId, trackChanges: false);
         return Ok(order);
+    }
+
+    [HttpOptions]
+    public IActionResult GetStoresOptions()
+    {
+        Response.Headers.Add("Allow", "GET, OPTIONS, POST, PUT, DELETE");
+        return Ok();
     }
 
 }
