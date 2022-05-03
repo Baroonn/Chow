@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Chow.Presentation.ActionFilters;
 using Chow.Presentation.ModelBinders;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
@@ -24,6 +25,7 @@ public class StoresController : ControllerBase
 
     [HttpGet]
     [HttpHead]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetStores([FromQuery] StoreParameters storeParameters)
     {
         var result = await _service.StoreService.GetAllStoresAsync(storeParameters, trackChanges: false);

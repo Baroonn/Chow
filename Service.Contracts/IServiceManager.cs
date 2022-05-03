@@ -6,4 +6,5 @@ public interface IServiceManager
     IMealComponentService MealComponentService { get; }
     IOrderService OrderService { get; }
     IStoreService StoreService { get; }
+    IAuthenticationService AuthenticationService { get; }
 }

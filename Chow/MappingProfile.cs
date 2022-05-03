@@ -18,5 +18,6 @@ public class MappingProfile: Profile
         CreateMap<BuyerUpdateDto, Buyer>().ReverseMap();
         CreateMap<Order, OrderReadDto>();
         CreateMap<OrderCreateDto, Order>();
+        CreateMap<UserRegistrationDto, User>();
     }
 }

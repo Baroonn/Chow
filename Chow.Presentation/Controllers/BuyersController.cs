@@ -29,6 +29,7 @@ namespace Chow.Presentation.Controllers
         [HttpGet("{id:guid}", Name = "BuyerById")]
         public async Task<IActionResult> GetBuyer(Guid id)
         {
+            
             var buyer = await _service.BuyerService.GetBuyerAsync(id, trackChanges: false);
             return Ok(buyer);
         }
