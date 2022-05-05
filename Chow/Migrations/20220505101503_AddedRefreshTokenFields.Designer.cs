@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository;
 
@@ -11,9 +12,10 @@ using Repository;
 namespace Chow.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20220505101503_AddedRefreshTokenFields")]
+    partial class AddedRefreshTokenFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -302,29 +304,29 @@ namespace Chow.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "93d25ea2-7629-41df-8208-3558ef282d93",
-                            ConcurrencyStamp = "200df581-260d-440e-8692-6f57bd0989f2",
+                            Id = "549a1980-4423-4445-94b2-ceef8fea6278",
+                            ConcurrencyStamp = "fb417cfa-eca5-4b68-ac9b-226534449531",
                             Name = "Seller",
                             NormalizedName = "SELLER"
                         },
                         new
                         {
-                            Id = "4bebf5cb-ceba-466e-99cb-34286594bc49",
-                            ConcurrencyStamp = "024d3598-e757-4eef-a65d-20047a5cfc37",
+                            Id = "839f25aa-f72c-4786-98e7-d4ad09311445",
+                            ConcurrencyStamp = "217725aa-4335-457c-bf1e-df10987e2119",
                             Name = "Buyer",
                             NormalizedName = "BUYER"
                         },
                         new
                         {
-                            Id = "aa527c5d-4574-4d0a-8812-2c3015968f22",
-                            ConcurrencyStamp = "0f216164-0765-4d52-b993-b1165c221ea2",
+                            Id = "30f1f23f-81a1-4860-906d-794fd80efaf8",
+                            ConcurrencyStamp = "e7fc9073-381b-47ac-9841-f81b1c5d57d7",
                             Name = "Rider",
                             NormalizedName = "RIDER"
                         },
                         new
                         {
-                            Id = "a4795ec2-d211-4ce8-9758-b1a0653e31fe",
-                            ConcurrencyStamp = "e0f60f50-60db-4b23-aef0-4751b4bd5d0e",
+                            Id = "1ccc9fe4-1ae5-4786-a728-ac4a3a88db42",
+                            ConcurrencyStamp = "02b5c556-a23b-4d13-8c09-ad35ea5f9bc8",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
