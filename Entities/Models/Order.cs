@@ -15,6 +15,8 @@ public class Order
     public string? BuyerPhone { get; set; }
     [Required(ErrorMessage="BuyerLocation is required")]
     public string? BuyerLocation{ get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     [ForeignKey(nameof(Store))]
     public Guid StoreId{ get; set; }
     public Store? Store { get; set; }

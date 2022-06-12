@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace Shared.DataTransferObjects
 {
-    public record OrderReadDto(Guid id, string Description, string Status, string BuyerPhone, string BuyerLocation, Guid StoreId, Guid BuyerId);
+    public record OrderReadDto(Guid id, string Description, string Status, string BuyerPhone, string BuyerLocation, Guid StoreId, Guid BuyerId, DateTime CreatedAt, DateTime UpdatedAt);
 }

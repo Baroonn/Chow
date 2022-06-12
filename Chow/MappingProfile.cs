@@ -16,7 +16,11 @@ public class MappingProfile: Profile
         CreateMap<Buyer, BuyerReadDto>();
         CreateMap<BuyerCreateDto, Buyer>();
         CreateMap<BuyerUpdateDto, Buyer>().ReverseMap();
-        CreateMap<Order, OrderReadDto>();
+        CreateMap<Order, OrderReadDto>()
+            .ForCtorParam("CreatedAt", 
+            opt => opt.MapFrom(x => x.CreatedAt.ToLocalTime()))
+            .ForCtorParam("UpdatedAt",
+            opt => opt.MapFrom(x => x.UpdatedAt.ToLocalTime()));
         CreateMap<OrderCreateDto, Order>();
         CreateMap<UserRegistrationDto, User>();
     }
