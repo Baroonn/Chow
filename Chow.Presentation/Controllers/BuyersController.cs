@@ -34,6 +34,14 @@ namespace Chow.Presentation.Controllers
             return Ok(buyer);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetBuyers([FromQuery] BuyerParameters buyerParameters)
+        {
+            var result = await _service.BuyerService.GetAllBuyersAsync(buyerParameters, trackChanges: false);
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(result.metaData));
+            return Ok(result.buyers);
+        }
+
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateBuyer([FromBody] BuyerCreateDto buyerCreateDto)
@@ -79,28 +87,6 @@ namespace Chow.Presentation.Controllers
 
         }
 
-        [HttpGet("{id:guid}/orders")]
-        public async Task<IActionResult> GetOrdersForBuyer(Guid id, [FromQuery] OrderParameters orderParameters)
-        {
-            var pagedResult = await _service.OrderService.GetAllOrdersForBuyerAsync(id, orderParameters, trackChanges:false);
-            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagedResult.metaData));
-            return Ok(pagedResult.buyerOrders);
-        }
-
-        [HttpGet("{id:guid}/orders/{orderId:guid}", Name ="GetOrderForBuyer")]
-        public async Task<IActionResult> GetOrdersForBuyer(Guid id, Guid orderId)
-        {
-            var ordersReadDto = await _service.OrderService.GetOrderForBuyerAsync(id, orderId, trackChanges: false);
-            return Ok(ordersReadDto);
-        }
-
-        [HttpPost("{id:guid}/orders")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
-        public async Task<IActionResult> CreateOrderForBuyer(Guid id,[FromBody] OrderCreateDto orderCreateDto)
-        {
-           
-            var orderReadDto = await _service.OrderService.CreateOrderForBuyerAsync(id, orderCreateDto, trackChanges: false);
-            return CreatedAtRoute("GetOrderForBuyer", new { id, orderId = orderReadDto.id }, orderReadDto);
-        }
+        
     }
 }
